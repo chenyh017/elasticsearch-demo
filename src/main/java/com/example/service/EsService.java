@@ -180,7 +180,6 @@ public class EsService {
 
 			if (idType == Long.class) {
 				method.invoke(obj, Long.parseLong(getResponse.getId()));
-				return;
 			}
 
 		} catch (Exception e) {
