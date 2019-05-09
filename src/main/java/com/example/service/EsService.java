@@ -164,7 +164,6 @@ public class EsService {
 			return null;
 		}
 	}
-	
 
 	private void setEsId(Class<?> clazz, GetResponse getResponse, Object obj, Class<?> idType) {
 		try {
@@ -206,33 +205,40 @@ public class EsService {
 		Class<?> clazz = bean.getClass();
 		Field[] fields = clazz.getDeclaredFields();
 		for (Field field : fields) {
-			if (!field.getName().equals("id")) {
-				if (field.getName().equals("esVersion")) {
-					if (field.getType() == Long.class) {
-						Object version = ReflectUtils.invokeGetMethod(bean, clazz, field);
-						if (version != null) {
-							request.version((Long) version);
-						}
-					}
-				} else {
-					if (field.getType() == LocalDateTime.class) {
-						Object value = ReflectUtils.invokeGetMethod(bean, clazz, field);
-						if (value != null) {
-							LocalDateTime date = (LocalDateTime) value;
-							jsonMap.put(field.getName(), date.format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
-						}
-					} else {
-						Object value = ReflectUtils.invokeGetMethod(bean, clazz, field);
-						if (value != null) {
-							jsonMap.put(field.getName(), value);
-						}
-					}
-				}
-			}
+			setSaveRequestSrouce(bean, request, jsonMap, clazz, field);
 
 		}
 		request.source(jsonMap);
 		return request;
+	}
+
+	private void setSaveRequestSrouce(Object bean, IndexRequest request, Map<String, Object> jsonMap, Class<?> clazz,
+			Field field) {
+		if (field.getName().equals("id")) {
+			return;
+		}
+
+		if (field.getName().equals("esVersion")) {
+			if (field.getType() == Long.class) {
+				Object version = ReflectUtils.invokeGetMethod(bean, clazz, field);
+				if (version != null) {
+					request.version((Long) version);
+				}
+			}
+			return;
+		}
+		if (field.getType() == LocalDateTime.class) {
+			Object value = ReflectUtils.invokeGetMethod(bean, clazz, field);
+			if (value != null) {
+				LocalDateTime date = (LocalDateTime) value;
+				jsonMap.put(field.getName(), date.format(DateTimeFormatter.ofPattern(DATE_FORMAT)));
+			}
+			return;
+		}
+		Object value = ReflectUtils.invokeGetMethod(bean, clazz, field);
+		if (value != null) {
+			jsonMap.put(field.getName(), value);
+		}
 	}
 
 	private Object getId(Object bean) {
