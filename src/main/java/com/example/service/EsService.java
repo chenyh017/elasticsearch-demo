@@ -39,7 +39,7 @@ public class EsService {
 		this.client = client;
 	}
 
-	private static final String DOC_NAME = "doc";
+	private static final String DOC_NAME = "_doc";
 	private static final String PROPERTIES = "properties";
 	private static final String TYPE = "type";
 	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
